@@ -7,7 +7,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { createServer as createViteServer } from 'vite';
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 const BACKEND_DIR = path.resolve(process.cwd(), 'LibrarySearchSystem', 'backend');
 const BRIDGE_BIN = path.join(BACKEND_DIR, 'library_bridge');
 const TESTS_BIN = path.join(BACKEND_DIR, 'run_tests');
