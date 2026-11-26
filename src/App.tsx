@@ -17,15 +17,23 @@ const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL || ''
 ).replace(/\/+$/, '');
 
+
 const INITIAL_STATE: LibraryState = {
-  catalogCount: 0,
+  catalogCount: 6,
   isIndexed: false,
   indexedCount: 0,
   trieNodeCount: 0,
   indexBuildTimeMs: 0,
   queriesProcessed: 0,
   historyCount: 0,
-  catalog: [],
+  catalog: [
+    { id: 0, order: 1, title: 'catalog' },
+    { id: 1, order: 2, title: 'catch' },
+    { id: 2, order: 3, title: 'catdog' },
+    { id: 3, order: 4, title: 'catalog' },
+    { id: 4, order: 5, title: 'car' },
+    { id: 5, order: 6, title: 'dog' },
+  ],
   history: [],
 };
 
