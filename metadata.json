@@ -1,0 +1,6 @@
+{
+  "name": "The Half-Remembered Library",
+  "description": "Partial-title retrieval system powered by a pure C suffix-separator Trie engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
