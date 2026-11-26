@@ -175,18 +175,57 @@ export default function App() {
   );
 
   // Search catalog
+  
+  // Search catalog locally for the Vercel demo
   const handleSearch = async (
     prefix: string,
     suffix: string
   ): Promise<SearchResponse> => {
-    const data = await apiJson<SearchResponse>('/api/search', {
-      method: 'POST',
-      body: JSON.stringify({ prefix, suffix }),
+    const p = prefix.trim().toLowerCase();
+    const s = suffix.trim().toLowerCase();
+
+    if (!/^[a-z]{1,8}$/.test(p) || !/^[a-z]{1,8}$/.test(s)) {
+      return {
+        ok: false,
+        code: -3,
+        resultId: -1,
+        resultTitle: '',
+        steps: 0,
+        timeUs: 0,
+        error: 'Enter a valid beginning and ending clue (1–8 letters each).',
+      };
+    }
+
+    const matches = state.catalog.filter((book) => {
+      const title = book.title.toLowerCase();
+      return title.startsWith(p) && title.endsWith(s);
     });
 
-    applyPartialState(data);
+    // Select the highest matching record ID, like the demo's C implementation.
+    const match = matches.length
+      ? matches.reduce((a, b) => a.id > b.id ? a : b)
+      : null;
 
-    return data;
+    const nextCount = state.queriesProcessed + 1;
+    const steps = p.length + s.length + 1;
+
+    const response: SearchResponse = {
+      ok: true,
+      code: match ? 0 : -1,
+      resultId: match?.id ?? -1,
+      resultTitle: match?.title ?? '',
+      steps,
+      timeUs: 0,
+      queriesProcessed: nextCount,
+      historyCount: state.historyCount + 1,
+    };
+
+    applyPartialState({
+      queriesProcessed: nextCount,
+      historyCount: state.historyCount + 1,
+    });
+
+    return response;
   };
 
   // Add catalog record
