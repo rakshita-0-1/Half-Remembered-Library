@@ -284,32 +284,38 @@ export default function App() {
 
   // Build Trie index
   
-const handleBuildIndex = async (): Promise<{
-  ok: boolean;
-  buildCode?: number;
-  error?: string;
-}> => {
+
+const handleBuildIndex = async () => {
   if (state.isIndexed) {
     return { ok: true, buildCode: 2 };
   }
 
   const startTime = performance.now();
-  const prefixes = new Set<string>();
+  const nodes = new Set<string>();
 
-  // Build a browser-side demonstration of the suffix Trie.
-  for (const book of state.catalog) {
+  state.catalog.forEach((book) => {
     const word = book.title.toLowerCase();
 
     for (let i = 0; i <= word.length; i++) {
       const sequence = word.slice(i) + '#' + word;
-      let prefix = '';
 
-      for (const char of sequence) {
-        prefix += char;
-        prefixes.add(prefix);
+      for (let j = 1; j <= sequence.length; j++) {
+        nodes.add(sequence.slice(0, j));
       }
     }
-  }
+  });
+
+  const buildTime = performance.now() - startTime;
+
+  applyPartialState({
+    isIndexed: true,
+    indexedCount: state.catalog.length,
+    trieNodeCount: nodes.size + 1,
+    indexBuildTimeMs: buildTime,
+  });
+
+  return { ok: true, buildCode: 1 };
+};
 
   const elapsed = performance.now() - startTime;
 
