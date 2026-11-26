@@ -283,21 +283,46 @@ export default function App() {
   };
 
   // Build Trie index
-  const handleBuildIndex = async () => {
-    const data = await apiJson<
-      Partial<LibraryState> & {
-        ok: boolean;
-        buildCode?: number;
-        error?: string;
+  
+const handleBuildIndex = async (): Promise<{
+  ok: boolean;
+  buildCode?: number;
+  error?: string;
+}> => {
+  if (state.isIndexed) {
+    return { ok: true, buildCode: 2 };
+  }
+
+  const startTime = performance.now();
+  const prefixes = new Set<string>();
+
+  // Build a browser-side demonstration of the suffix Trie.
+  for (const book of state.catalog) {
+    const word = book.title.toLowerCase();
+
+    for (let i = 0; i <= word.length; i++) {
+      const sequence = word.slice(i) + '#' + word;
+      let prefix = '';
+
+      for (const char of sequence) {
+        prefix += char;
+        prefixes.add(prefix);
       }
-    >('/api/index/build', {
-      method: 'POST',
-    });
+    }
+  }
 
-    applyPartialState(data);
+  const elapsed = performance.now() - startTime;
 
-    return data;
-  };
+  applyPartialState({
+    isIndexed: true,
+    indexedCount: state.catalog.length,
+    trieNodeCount: prefixes.size + 1,
+    indexBuildTimeMs: Number(elapsed.toFixed(3)),
+  });
+
+  return { ok: true, buildCode: 1 };
+};
+
 
   // Clear search history
   const handleClearHistory = async () => {
